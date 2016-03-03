@@ -32,7 +32,7 @@ filevault.model = (function(){
 
     showPhoto = function(img){
       var
-        image_path, image_name, path, new_photo, path_sections,
+        image_path, image_name, new_photo, path_sections,
         path = img;
       
       console.log('path : ', path);
@@ -152,7 +152,7 @@ filevault.model = (function(){
           jqueryMap.$content.append(photo);
         });
       }
-      jqueryMap.$container.append(jqueryMap.$content)
+      jqueryMap.$container.append(jqueryMap.$content);
     };
 
     onPhotoClick = function(evt){
@@ -199,7 +199,7 @@ filevault.model = (function(){
       photo = photo_map;
 
     img_path =  photo.image_path + '/' + photo.image_name;
-    var $img = $('<img />');
+    $img = $('<img />');
 
     $img.attr({
       src : img_path,

@@ -75,7 +75,7 @@ filevault.main = (function () {
   onToggleState = function(){
     console.log('toggling State');
     if(stateMap.is_gallery_visible){
-     jqueryMap.$photo_container.toggle;
+     jqueryMap.$photo_container.toggle();
      stateMap.is_gallery_visible = false;
     }else{
       jqueryMap.$gallery_container.toggle();
@@ -98,22 +98,12 @@ filevault.main = (function () {
   };
 
   historyChange = function(evt){
-    //console.log('popstate: ', history.state);
-    /*
-    bUpdateURL = false;   //what does this do??
-    oPageInfo.title = evt.state.title;
-    oPageInfo.url = evt.state.url;
-    //getPage();
-    route(evt.state.url);
-    */
-
     if(!history.state){
       history.replaceState(null, null, location.pathname);
       console.log('navigating location.pathname : %s ', location.pathname);
       router.navigate(location.pathname);
       return true;
     }
-    console.log('back button: ', history.state.url, history.state.path);
     router.navigate(history.state.url, history.state.path);
   };
      
@@ -121,7 +111,7 @@ filevault.main = (function () {
     var 
       add, navigate,
       base = {'/' : filevault.model.gallery.updateGallery},
-      routes = [{'/^\/[^\w|\S]/' : filevault.gallery.updateGallery}];
+      routes = [];
 
     add = function(regex, callback){
       routes.push[{regex: callback}];
@@ -133,15 +123,13 @@ filevault.main = (function () {
       data = data || null;
       for(var i=0; i<routes.length; i++) {
         var found = url.match(routes[i].regex);
-        console.log('MATCHED URL', found);
         if(found) {
           found.shift();
           routes[i].callback.apply({}, match, data);
           return true;
-        }           
+        }
       }
-      //callback = base['/'];
-      console.log('navigate callback: ', callback);
+      callback = base['/'];
       history.pushState(data , null, url);
       callback(data);
     };
@@ -156,7 +144,7 @@ filevault.main = (function () {
     stateMap.$container = $container;
     stateMap.$container.html(configMap.core_html);
     setJqueryMap();
-    router.add(/^\/(.+)/, filevault.model.photo.newPhoto); 
+    router.add(/^\/[^\w|\S]/, filevault.model.photo.newPhoto); 
 
     //filevault.model.initModule($container);
     filevault.data.initModule();

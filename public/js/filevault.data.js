@@ -17,15 +17,15 @@ filevault.data = (function(){
         data: ''
       }
     },
-  sendFiles, bIsLoading, initModule, get;
+    sendFiles, initModule, get;
 
 
   sendFiles = function(arg_map){
     var 
       file_map = arg_map.file_map,
-      url_list = arg_map.url_list,
-      $container = arg_map.$container,
-      $img, prog_bar_container,file_urls, body, xhr, upload;
+    url_list = arg_map.url_list,
+    $container = arg_map.$container,
+    $img, prog_bar_container,file_urls, body, xhr, upload;
 
 
     //find image matching object url
@@ -35,7 +35,7 @@ filevault.data = (function(){
       upload(prog_bar_container, object_url);
     });
 
-    function upload($container, file){
+    upload = function ($container, file){
       var step, $inner_width, $outer_width, $progress_bar;
 
       file = file_map[file];
@@ -52,6 +52,7 @@ filevault.data = (function(){
           return true;
         }
       };
+
       xhr.upload.onprogress = function(e) {
         if (e.lengthComputable) {
           var new_width = Math.floor(e.loaded/e.total*100);
@@ -59,14 +60,13 @@ filevault.data = (function(){
           $inner_width.width(new_width*step);
         }
       };
+
       xhr.open('POST', '/image');
       body.append('ImgFiles', file, file.name);
       xhr.send(body);
-      //if(xhr.status == 200) return true;
     };
-
+  };
     /*
-
        data = new FormData();
        data.append('Image', photo_list[0].src);
        $.ajax({
@@ -83,27 +83,26 @@ filevault.data = (function(){
        console.log("sending" + element.src);
        });
        */
-  };
 
-  get = function(options){
-    var 
-      ajax_options = $.extend({}, configMap.options, options);
+    get = function(options){
+      var 
+        ajax_options = $.extend({}, configMap.options, options);
 
-    $.ajax( ajax_options)
-      .done(function(data){
-        $(document).trigger(ajax_options.event_name + 'Finished',  data);
-      });
-  };
+      $.ajax( ajax_options)
+        .done(function(data){
+          $(document).trigger(ajax_options.event_name + 'Finished',  data);
+        });
+    };
 
 
-  initModule = function(){
+    initModule = function(){
 
-  };
+    };
 
-  return {
-    initModule : initModule,
-    sendFiles : sendFiles,
-    get : get
-  };
+    return {
+      initModule : initModule,
+      sendFiles : sendFiles,
+      get : get
+    };
 
-})();
+  })();
