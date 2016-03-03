@@ -10,7 +10,7 @@ filevault.main = (function () {
       core_html : String()          //static values 
         + '<div id="filevault-main-content">'
           + '<div class="filevault-head">'
-            + '<div id="filevault-logo"><h1><a href="">FileVault</a></h1></div>'
+            + '<div id="filevault-logo"><h1><a href="/">FileVault</a></h1></div>'
             + '<div id="filevault-global-button" class="filevault-button"><a href="">Upload File/s</a></div>'
             + '<div id="filevault-acct" class="filevault-button"><a href="">Sign In</a> / <a href="">Register</a></div>'
           + '</div>'

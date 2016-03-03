@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "start": "./node_modules/forever/bin/forever -d -w -c 'node' bin/www",
     "build": "./node_modules/gulp/bin/gulp.js"
   },
   "dependencies": {

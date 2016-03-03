@@ -11,10 +11,7 @@ var
 
 
 app.disable('x-powered-by');
-app.use(express.static(path.join(__dirname, 'public'), 
-    { maxAge: 3600,
-      'index' : 'filevault.html'
-    }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 

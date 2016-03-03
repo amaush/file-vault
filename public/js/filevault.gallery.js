@@ -17,11 +17,12 @@ filevault.model = (function(){
           + '<aside id="filevault-side-bar"></aside>'
       },
       stateMap = {
-        $container : null
+        $container : null,
+        photo_db : { }
       },
       jqueryMap = { },
-      setJqueryMap, initModule, showPhoto, renderSideBar,
-      onTogglePhoto, onThumbClick, onPhotoClick;
+      setJqueryMap, initModule, showPhoto, _renderSideBar, _renderImage,
+      getImagePath, onTogglePhoto, onThumbClick, onPhotoClick;
 
     setJqueryMap = function(){
       jqueryMap = {
@@ -30,32 +31,45 @@ filevault.model = (function(){
       };
     };
 
-    showPhoto = function(img){
+    getImagePath = function(img_url){
       var
-        image_path, image_name, new_photo, path_sections,
-        path = img;
-      
-      console.log('path : ', path);
-      path_sections = path.split('/');
+        img_name, img_path,
+      path_parts = img_url.split('/');
 
-      path_sections.shift();  
-      image_name = path_sections.pop();
-      image_path = '/' + path_sections.join( '/');
-      image_name = image_name.replace('_t', '');
-      //console.log('showPhoto image is %s: %s', image_path, image_name);
-      new_photo = makePhoto({
-        image_path : image_path,
-        image_name : image_name 
-       });
-      //new_photo = makePhoto(new_photo);
-      history.pushState({url: '/' + image_name, path: img}, 'image', image_name);
-      jqueryMap.$content.empty();
-      jqueryMap.$content.append(new_photo);
-      renderSideBar();
+      path_parts.shift();  
+      img_name = path_parts.pop();
+      img_path = '/' + path_parts.join( '/');
+      img_name = img_name.replace('_t', '');
+
+      return { image_path : img_path, image_name : img_name };
+
     };
 
-    renderSideBar = function(){
-      var thumbs = gallery.get_thumbnails();
+    showPhoto = function(img){
+      var 
+        new_photo,
+        path = { };
+
+      path = getImagePath(img);
+      new_photo = makePhoto(path);
+      //stateMap[path.image_name] = new_photo;
+      history.pushState({url: '/' + path.image_name, path: [path.image_path, path.image_name].join('/')}, 'Image', path.image_name);
+      _renderImage(new_photo);
+    };
+
+    _renderImage = function(photo){
+      jqueryMap.$content.empty();
+      jqueryMap.$content.append(photo);
+      _renderSideBar();
+    };
+
+   _renderSideBar = function(){
+      var thumbs;
+      
+      jqueryMap.$side_bar.empty();
+      
+      console.log('sidebar');
+      thumbs = gallery.get_thumbnails();
       thumbs.forEach(function(thumb){
         jqueryMap.$side_bar.append(thumb);
       });
@@ -63,7 +77,7 @@ filevault.model = (function(){
 
     onPhotoClick = function(evt){
       evt.preventDefault();
-      showPhoto(evt.target.getAttribute('src'));
+      //showPhoto(evt.target.getAttribute('src'));
     };
 
     onThumbClick = function(evt){
@@ -81,7 +95,7 @@ filevault.model = (function(){
       $container.append(configMap.core_html);
       $(document).on('toggleGallery', onTogglePhoto);
       setJqueryMap();
-      jqueryMap.$content.on('click', onPhotoClick);
+      //jqueryMap.$content.on('click', onPhotoClick);
       jqueryMap.$side_bar.on('click', onThumbClick);
     };
 
@@ -90,6 +104,24 @@ filevault.model = (function(){
       showPhoto : showPhoto
     };
   })();
+
+  makePhoto = function(photo_map){
+    var 
+      $img, img_path, 
+    photo = photo_map;
+
+    img_path =  photo.image_path + '/' + photo.image_name;
+    $img = $('<img />');
+
+    $img.attr({
+      src : img_path,
+      title : 'image',
+      "data-lm" : '',
+      "data-title" : '',
+      "data-lastM" : ''
+    });
+    return $img;
+  };
 
 
   gallery = (function(){
@@ -142,9 +174,9 @@ filevault.model = (function(){
       jqueryMap.$content.empty();
       if(data){
         data.forEach(function(photo, idx){
-            var new_img =  makePhoto(photo);
-            jqueryMap.$content.append(new_img);
-            stateMap.photo_db.push(new_img);
+          var new_img =  makePhoto(photo);
+          jqueryMap.$content.append(new_img);
+          stateMap.photo_db.push(new_img);
         });
       }else{
         console.log('CACHE HIT');
@@ -158,7 +190,8 @@ filevault.model = (function(){
     onPhotoClick = function(evt){
       var 
         path;
-      
+      console.log('toggling gallery');
+
       //path = evt.target.getAttribute('src').split('/').pop();
       $(document).trigger('toggleGallery', evt.target);
     };
@@ -192,24 +225,6 @@ filevault.model = (function(){
       get_thumbnails : get_thumbnails
     };
   })();
-
-  makePhoto = function(photo_map){
-    var 
-      $img, img_path, 
-      photo = photo_map;
-
-    img_path =  photo.image_path + '/' + photo.image_name;
-    $img = $('<img />');
-
-    $img.attr({
-      src : img_path,
-      title : 'image',
-      "data-lm" : '',
-      "data-title" : '',
-      "data-lastM" : ''
-    });
-    return $img;
-  };
 
   return {
     gallery : gallery,
