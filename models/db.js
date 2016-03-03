@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    dbURI = 'mongodb://localhost:27017/filevault';
+    dbURI = require('../config').db;
 
 mongoose.connect(dbURI);
 
