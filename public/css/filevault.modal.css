@@ -1,0 +1,251 @@
+/** 
+ *
+ * Stylesheet for all the modals in the application
+ *
+ **/
+
+
+fieldset {
+    border: none;
+}
+
+legend {
+    font-size: 15px;
+}
+
+#filevault-drop-zone {
+    border: 2px dashed #666;
+    width : 100%;
+    height: 100px;
+    text-align: center;
+    font-size: 15px;
+    margin-top: 20px;
+    padding: 5%;
+}
+
+.filevault-upload-form > p {
+    justify: center;
+    width: 100%;
+    font-weight: bold;
+}
+
+.filevault-button, #filevault-upload-button{
+    position: relative;
+    padding: 10px 15px;
+    background: #4479BA;
+    color: #FFF;
+    border-radius: 4px;
+    border: solid 1px #20538D;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    transition-duration: 0.5s;
+    -moz-user-select:none;
+}
+.filevault-button:hover {
+    background: #356094;
+    border: solid 1px #2A4E77;
+    text-decoration: none;
+}
+.filevault-button a:hover{
+    text-decoration: none;
+}
+
+.filevault-button:active {
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
+    background: #2E5481;
+    border: solid 1px #203E5F;
+}
+
+#filevault-upload-button{
+    width: 100%;
+}
+
+#filevault-file-picker{
+    position: relative;
+    display: inline-block;
+    font-size: 16px;
+    color: #fff;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.modalDialog {
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99999;
+    opacity:0;
+    -webkit-transition: opacity 400ms ease-in;
+    -moz-transition: opacity 400ms ease-in;
+    transition: opacity 400ms ease-in;
+    pointer-events: none;
+}
+.modalDialog:target {
+    opacity:1;
+    pointer-events: auto;
+}
+.modalDialog > div {
+    width: 400px;
+    position: relative;
+    margin: 10% auto;
+    padding: 5px 20px 13px 20px;
+    border-radius: 10px;
+    background: #fff;
+    background: -moz-linear-gradient(#fff, #999);
+    background: -webkit-linear-gradient(#fff, #999);
+    background: -o-linear-gradient(#fff, #999);
+}
+
+.close:hover {
+    background: #00d9ff;
+}
+
+/** New Modal */
+
+#modal-background {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: .40;
+    -webkit-opacity: .4;
+    -moz-opacity: .4;
+    filter: alpha(opacity=40);
+    z-index: 1000;
+    cursor: pointer;
+}
+
+#modal-content {
+    background-color: white;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    box-shadow: 0 0 20px 0 #222;
+    -webkit-box-shadow: 0 0 20px 0 #222;
+    -moz-box-shadow: 0 0 20px 0 #222;
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+    left: 50%;
+    margin: -120px 0 0 -160px;
+    padding: 10px;
+    position: relative;
+    top: 30%;
+    width: 375px;
+    z-index: 9999;
+    border: 8px solid #4479BA;
+}
+
+.close{
+    right: -12px;
+    top: -10px;
+}
+
+.remove-file, .close {
+    display: inline-block;
+    background: #606061;
+    color: #FFFFFF;
+    line-height: 25px;
+    position: absolute;
+    text-align: center;
+    width: 24px;
+    text-decoration: none;
+    font-weight: bold;
+    -webkit-border-radius: 12px;
+    border-radius: 12px;
+    box-shadow: 1px 1px 3px #000;
+}
+/** File Preview Pane Styles */
+.remove-file{
+    right: -12px;
+    top: -28px;
+    box-shadow: 1px #000;
+
+}
+.remove-file:hover{
+    background: #00d9ff;
+
+}
+
+.img-container {
+    width: 100%;
+    border: 1px solid;
+}
+
+.img-container img{
+    height: 50px;
+    width: 20%;
+    padding: 10px 0 0 5px;
+}
+
+p.img-wrapper{
+}
+
+.remove-file{
+    position: relative;
+}
+
+
+/** Progress upload Styles */
+.bar,
+.inner-bar
+{
+    height: 15px;
+    border-radius: 25px;
+}
+
+.bar
+{
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    border: 1px solid #000000;
+    width: 50%;
+    top: 25px;
+    left: 5%;
+}
+
+span.remove-icon{
+    display: inline-block;
+    vertical-align: top;
+}
+
+
+.inner-bar
+{
+    width: 0;
+    background-color: #3E3C3C;
+}
+
+.progress
+{
+    position: absolute;
+    font-size: 30px;
+    width: 100%;
+    text-align: center;
+    top: 10px;
+}
+
+button
+{
+    display: block;
+    width: 80%;
+    height: 50px;
+    margin: 50px 0;
+    background: #3498db;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+

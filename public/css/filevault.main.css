@@ -1,0 +1,135 @@
+#filevault{
+    padding : 8px;
+    min-height : 500px;
+    min-width : 500px;
+    overflow : hidden;
+    background-color : #fff;
+    border-radius : 8px;
+    width : 80%;
+    margin: 0 auto;
+}
+
+.filevault-head{
+    height: 50px;
+    color: #FFF;
+    background : #4479AB;
+    width : 100%;
+}
+
+#filevault-logo{
+    display: inline-block;
+    vertical-align: top;
+    width: 45%;
+    padding: 5px 15px;
+}
+
+#filevault-global-button{
+    display: inline-block;
+    vertical-align: top;
+    height: 50px;
+    width:15%;
+    padding: 15px;
+    background: #777;
+}
+
+#filevault-acct{
+    display: inline-block;
+    background: #353533;
+    color: inherit;
+    vertical-align: top;
+    height: 50px;
+    width: 25%;
+    padding: 15px;
+    margin-left: 15%;
+}
+
+#filevault-upload-modal{
+    position: absolute;
+    display: block;
+    height: 400px;
+    margin-left: 40%;
+}
+
+#filevault-content{
+    position: relative;
+    width: 100%;
+    top: 10px;
+    background: #f9f9f9;
+}
+
+#filevault-upload-form{
+    position: relative;
+    height: 200px;
+    display: block;
+}
+
+.filevault-x-clearfloat {
+    height : 0 !important;
+    float : none !important;
+    visibility : hidden !important;
+    clear : both !important;
+}
+
+/**** Login form ****/
+section.account-form{
+    border-radius: 2px;
+    padding: 24px;
+}
+
+header#account-header{
+    background-color: #cfcfcf;
+}
+
+header#account-header a:link{
+    text-decoration: none;
+}
+
+header#account-header span{
+    display:inline-block;
+    position: relative;
+    vertical-align: top;
+    width: 48%;
+    margin: 1%;
+    height: 60px;
+    background-color:#4479BA;
+    color: rgb(255,255,255);
+    padding: 6%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 15px;
+}
+
+
+form.minimal label{
+    display: block;
+    margin: 6px 0;
+}
+
+form.minimal input[type="text"],
+form.minimal input[type="email"],
+form.minimal input[type="password"],
+form.minimal textarea {
+    background-color: rgb(255,255,255);
+    border: 1px solid rgb(186,186,186);
+    border-radius: 2px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+    display: block;
+    font-size: 14px;
+    margin: 6px 0 12px 0;
+    padding: 8px;
+    text-shadow: 0 1px 1px rgba(255,255,255,1);
+    width: 90%;
+    -moz-transition: all 0.1s linear;
+}
+
+form.minimal input[type="text"]:focus,
+form.minimal input[type="email"]:focus,
+form.minimal input[type="number"]:focus,
+form.minimal input[type="search"]:focus,
+form.minimal input[type="password"]:focus,
+form.minimal textarea:focus,
+form.minimal select:focus {
+    border-color: #4195fc;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 0 8px #4195fc;
+    color: rgb(0,0,0,);
+}

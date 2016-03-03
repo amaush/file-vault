@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>FileVault</title>
+        <link rel="stylesheet" href="css/filevault.css" type="text/css" />
+        <link rel="stylesheet" href="css/filevault.main.css" type="text/css" />
+        <link rel="stylesheet" href="css/filevault.modal.css" type="text/css" />
+        <link rel="stylesheet" href="css/filevault.gallery.css" type="text/css" />
+
+        <!-- third party js -->
+        <script src="js/jq/jquery-2.2.0.js"></script>
+        <script src="js/jq/jquery.event.gevent.js"></script> 
+        
+       <!-- local javascript -->
+        <script src="js/filevault.js"></script>
+        <script src="js/filevault.data.js"></script>
+        <script src="js/filevault.model.js"></script>
+        <script src="js/filevault.modal.js"></script>
+        <script src="js/filevault.gallery.js"></script>
+        <script src="js/filevault.main.js"></script>
+        <script>
+            $(function () {
+                filevault.initModule($('#filevault'));
+            });
+        </script>
+
+    </head>
+    
+    <body>
+        <div id="filevault">
+
+        </div>
+    </body>
+</html>
