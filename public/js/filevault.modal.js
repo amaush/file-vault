@@ -154,6 +154,75 @@ filevault.modal = (function(){
     jqueryMap.$preview_pane.append(jqueryMap.$img_collection);
   };
 
+  onFileBrowse = function(evt){
+    jqueryMap.$file_input.click();
+    evt.preventDefault(); 
+  };
+
+  onFileSelect = function(evt){
+    var files = evt.target.files ;
+    jqueryMap.$preview_pane.show();
+    handleFiles(files);
+  };
+
+  onDrop = function(evt){
+    evt.preventDefault();
+    evt.stopPropagation();
+    console.log(evt.dataTransfer);
+
+    var dt = evt.dataTransfer;
+    var files = dt.files;
+    jqueryMap.$preview_pane.show();
+    handleFiles(files);
+  };
+
+  //add class when draggable over dropzone
+  onDragEnter = function(evt){
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = "copy";
+  };
+
+  onDragOver = function(evt){
+    evt.stopPropagation();
+    evt.preventDefault();
+  };
+
+  //delegate clicks to remove file from preview pane
+  onPreviewPaneClick = function(evt){
+    var img_wrapper, img, object_url_list, send,
+        target = $(evt.target);
+    
+    evt.preventDefault();
+    evt.stopPropagation();
+    if(target.is('a')){     
+      //clicked on remove file preview 
+      img_wrapper = target.closest('p.img-wrapper'); 
+      img = target.closest('p').find('img')[0];   
+
+      //find image related to this event
+      console.log(img);
+      if(!!img_wrapper.siblings('p').length){    //Other files still remain in preview pane
+        img_wrapper.remove();
+        delete stateMap.user_files[img.src];
+      }else{                                    
+        //No files left in preview pane
+        img_wrapper.remove();
+        stateMap.user_files = { };
+        jqueryMap.$preview_pane.hide();
+      }
+    }else if(target.is(jqueryMap.$button)){
+      object_url_list = Object.keys(stateMap.user_files);
+      send = filevault.model.gallery.send({ 
+        file_map : stateMap.user_files,
+        url_list: object_url_list, 
+        $container : jqueryMap.$preview_pane,
+        files : true
+      });
+      if(send){ console.log('request successful');}
+    }
+  };
+
   onLoginFormClick = function(evt){
     jqueryMap.$register_form.detach();
     jqueryMap.$container.append(jqueryMap.$login_form);
@@ -242,88 +311,13 @@ filevault.modal = (function(){
     alert("Logged Out");
   };
 
-
-  onFileBrowse = function(evt){
-    jqueryMap.$file_input.click();
-    evt.preventDefault(); 
-  };
-
-  onFileSelect = function(evt){
-    var files = evt.target.files ;
-    jqueryMap.$preview_pane.show();
-    handleFiles(files);
-  };
-
-  onDrop = function(evt){
-    if(evt.isPropagationStopped){
-      console.log("Drop Propagation Stopped");
-    }else{
-      console.log("Drop Propagation not Stopped");
-    }
-    files = evt.dataTransfer.files;
-    jqueryMap.$preview_pane.show();
-    handleFiles(files);
-    evt.preventDefault();
-    evt.stopPropagation();
-  };
-
-  //add class when draggable over dropzone
-  onDragEnter = function(evt){
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = "copy";
-  };
-
-  onDragOver = function(evt){
-    if(evt.isPropagationStopped){
-      console.log("Dragover Propagation Stopped");
-    }else{
-      console.log(" DragOver Propagation not Stopped");
-    }
-  };
-
-  //delegate clicks to remove file from preview pane
-  onPreviewPaneClick = function(evt){
-    var img_wrapper, img, object_url_list, send,
-        target = $(evt.target);
-    
-    evt.preventDefault();
-    evt.stopPropagation();
-    if(target.is('a')){     
-      //clicked on remove file preview 
-      img_wrapper = target.closest('p.img-wrapper'); 
-      img = target.closest('p').find('img')[0];   
-
-      //find image related to this event
-      console.log(img);
-      if(!!img_wrapper.siblings('p').length){    //Other files still remain in preview pane
-        img_wrapper.remove();
-        delete stateMap.user_files[img.src];
-      }else{                                    
-        //No files left in preview pane
-        img_wrapper.remove();
-        stateMap.user_files = { };
-        jqueryMap.$preview_pane.hide();
-      }
-    }else if(target.is(jqueryMap.$button)){
-      object_url_list = Object.keys(stateMap.user_files);
-      send = filevault.model.gallery.send({ 
-        file_map : stateMap.user_files,
-        url_list: object_url_list, 
-        $container : jqueryMap.$preview_pane,
-        files : true
-      });
-      if(send){ console.log('request successful');}
-    }
-  };
-
   onClickModalBackground = function(evt){
     $(document).trigger('toggleModal');
     evt.preventDefault();
   };
 
   initModule = function ($container){
-    $.event.props.push("dataTransfer");   //allow Jquery to attach drag n drop files
+    $.event.props.push('dataTransfer');   //allow Jquery to attach drag n drop files
     stateMap.$container = $container;
     $container.append(configMap.core_html);
     setJqueryMap();
