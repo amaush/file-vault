@@ -6,7 +6,8 @@
 
 var filevault = (function () {
   var initModule = function($container){
-    filevault.main.initModule($container);
+    //initialise master controller
+    filevault.main.initModule($container);    
   };
    
    return { initModule: initModule };

@@ -75,10 +75,11 @@ filevault.main = (function () {
   onToggleState = function(){
     console.log('toggling State');
     if(stateMap.is_gallery_visible){
-     jqueryMap.$photo_container.toggle();
+     jqueryMap.$photo_container.hide();
+     jqueryMap.$side_bar.hide();
      stateMap.is_gallery_visible = false;
     }else{
-      jqueryMap.$gallery_container.toggle();
+      jqueryMap.$gallery_container.show();
       stateMap.is_gallery_visible = true;
     }
   };
@@ -99,11 +100,12 @@ filevault.main = (function () {
 
   historyChange = function(evt){
     if(!history.state){
-      history.replaceState(null, null, location.pathname);
-      console.log('navigating location.pathname : %s ', location.pathname);
+      console.log('empty history');
+      history.replaceState(null, '/homePage', location.pathname);
       router.navigate(location.pathname);
       return true;
     }
+
     router.navigate(history.state.url, history.state.path);
   };
      
@@ -111,16 +113,29 @@ filevault.main = (function () {
     var 
       add, navigate,
       base = {'/' : filevault.model.gallery.updateGallery},
-      routes = [];
+      routes = {};
 
     add = function(regex, callback){
-      routes.push[{regex: callback}];
+      routes[regex]  = callback;
     };
     
     navigate = function(url, data){
-      var callback;
+      var callback, found;
+  
+       console.log('navigating location.pathname : %s & history.state.url: ', location.pathname,  url);
 
-      data = data || null;
+      //if(path === '/'){
+        
+      found = url.match(/^\/(\w+)/);
+      if(found){
+        console.log('url data: ', data);
+        filevault.model.photo.showPhoto(data);
+      }else{
+        callback = base['/'];
+        data = data || null;
+        callback(data);
+      }
+     /* 
       for(var i=0; i<routes.length; i++) {
         var found = url.match(routes[i].regex);
         if(found) {
@@ -129,9 +144,8 @@ filevault.main = (function () {
           return true;
         }
       }
-      callback = base['/'];
-      history.pushState(data , null, url);
-      callback(data);
+      */
+      //history.pushState(data , null, url);
     };
 
     return {
@@ -144,7 +158,8 @@ filevault.main = (function () {
     stateMap.$container = $container;
     stateMap.$container.html(configMap.core_html);
     setJqueryMap();
-    router.add(/^\/[^\w|\S]/, filevault.model.photo.newPhoto); 
+    router.add('/', filevault.model.gallery.updateGallery);
+    router.add(/^\/[^\w|\S]/, filevault.model.photo.showPhoto); 
 
     //filevault.model.initModule($container);
     filevault.data.initModule();

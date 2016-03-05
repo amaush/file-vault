@@ -101,31 +101,31 @@ filevault.modal = (function(){
     };
   };
 
-  fileSize = function (bytes, si) {
-    var thresh = si ? 1024 : 1000;
-      if(Math.abs(bytes) < thresh) {
-        return bytes + ' B';
-      }
-      var units = si ? ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB']
-                    : ['kB','MB','GB','TB','PB','EB','ZB','YB'];
-      var u = -1;
-          do {
-            bytes /= thresh;
-            ++u;
-          } while(Math.abs(bytes) >= thresh && u < units.length - 1);
-      return bytes.toFixed(1)+' '+units[u];
+  fileSize = function (bytes) {
+    var thresh = 1000;
+
+    if(Math.abs(bytes) < thresh) {
+      return bytes + ' B';
+    }
+    var units =  ['kB','MB','GB','TB','PB','EB','ZB','YB'];
+    var u = -1;
+    do {
+      bytes /= thresh;
+      ++u;
+    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+
+    return bytes.toFixed(1)+' '+units[u];
   };
 
   handleFiles = function (files){
     var 
       $image_collection,
       imageType = /^image\//;
-
+    
     for (var i = 0; i < files.length; i++){
       var file = files[i];
       if(!imageType.test(file.type)){
-        // image is not an object. Notify user???
-        continue;
+        continue;     // image is not an object. Failing silently
       }
       var $file_remove_icon = $('<span></span>').attr({
             'class' : 'remove-file'
@@ -263,7 +263,6 @@ filevault.modal = (function(){
     files = evt.dataTransfer.files;
     jqueryMap.$preview_pane.show();
     handleFiles(files);
-    //replace the 2 lines below with return false;
     evt.preventDefault();
     evt.stopPropagation();
   };
@@ -273,7 +272,6 @@ filevault.modal = (function(){
     evt.stopPropagation();
     evt.preventDefault();
     evt.dataTransfer.dropEffect = "copy";
-    //return false;
   };
 
   onDragOver = function(evt){
@@ -298,8 +296,7 @@ filevault.modal = (function(){
 
       //find image related to this event
       console.log(img);
-      if(!!img_wrapper.siblings('p').length){  
-        //files still remaining in preview pane
+      if(!!img_wrapper.siblings('p').length){    //Other files still remain in preview pane
         img_wrapper.remove();
         delete stateMap.user_files[img.src];
       }else{                                    

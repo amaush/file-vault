@@ -59,7 +59,8 @@ filevault.model = (function(){
 
     _renderImage = function(photo){
       jqueryMap.$content.empty();
-      jqueryMap.$content.append(photo);
+      //jqueryMap.$content.append(photo);
+      jqueryMap.$content.css({'background-image': photo});
       _renderSideBar();
     };
 
@@ -158,10 +159,7 @@ filevault.model = (function(){
         filevault.data.get({
           event_name : 'updateGallery'
         });
-      }else{
-
       }
-
       //_renderGallery();
     };
 
@@ -179,7 +177,6 @@ filevault.model = (function(){
           stateMap.photo_db.push(new_img);
         });
       }else{
-        console.log('CACHE HIT');
         photo_db.forEach(function(photo, idx){
           jqueryMap.$content.append(photo);
         });
