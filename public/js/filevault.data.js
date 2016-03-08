@@ -8,101 +8,73 @@
 filevault.data = (function(){
   'use strict';
 
-  var 
-    configMap = {
-      options : { 
-        method: 'GET',
-        url: '/image',
-        event_name: '',
-        data: ''
-      }
-    },
-    sendFiles, initModule, get;
+  var send, initModule, request;
 
+  send = function(request_info){
+    var
+      file, xhr, request_body, body;
 
-  sendFiles = function(arg_map){
-    var 
-      file_map = arg_map.file_map,
-    url_list = arg_map.url_list,
-    $container = arg_map.$container,
-    $img, prog_bar_container,file_urls, body, xhr, upload;
+    request_body = request_info ? request_info.body : null;
+    file = request_body ? request_body.file : null;
 
+    xhr = new XMLHttpRequest();
 
-    //find image matching object url
-    url_list.forEach(function(object_url, indx){
-      $img = $container.find('img[src="' + object_url + '"]');
-      prog_bar_container = $img.next('.bar');
-      upload(prog_bar_container, object_url);
-    });
-
-    upload = function ($container, file){
-      var step, $inner_width, $outer_width, $progress_bar;
-
-      file = file_map[file];
-      $outer_width = $($container).width(); 
-      $inner_width = $container.find($('.inner-bar').width(0));
-      step = $outer_width / 100;
-      $progress_bar = $container.find('.progress');
-
-      xhr = new XMLHttpRequest();
+    xhr.open(request_info.method, request_info.url);
+    if(!file){
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      body = JSON.stringify(request_body);
+      console.log('request ', body);
+    }else{
       body = new FormData();
-      xhr.onreadystatechange = function(e){
-        if(this.readyState == 4 && this.status == 200){
-          $(document).trigger({ type: 'uploadFinished', response : JSON.parse(this.response)});
-          return true;
-        }
-      };
+      body.append('ImgFiles', file, file.name );
+    }
 
-      xhr.upload.onprogress = function(e) {
-        if (e.lengthComputable) {
-          var new_width = Math.floor(e.loaded/e.total*100);
-          $progress_bar.text(new_width + '%');
-          $inner_width.width(new_width*step);
-        }
-      };
-
-      xhr.open('POST', '/image');
-      body.append('ImgFiles', file, file.name);
-      xhr.send(body);
+    xhr.loadstart = function(e){
+      console.log('upload started');
+      $(document).trigger({type: request_info.event_name + 'Start', $container : request_body.$progress_container});
     };
+
+    xhr.upload.onprogress = function(e) {
+      console.log('upload progress');
+      if (e.lengthComputable) {
+        //var new_width = ;
+        if(file){
+          request_body.$progress_container.val(Math.floor(e.loaded/e.total*100));
+        }
+        //$inner_width.width(new_width*step);
+      }
+    };
+
+    xhr.onload = function(e){
+      console.log('upload finished');
+      //$(document).trigger(options.event_name + 'FinishedEvent');
+      
+      $(document).trigger({ type: request_info.event_name + 'Finished', response : JSON.parse(this.response)});
+    };
+
+    xhr.error = function(e){
+      console.log('upload error');
+      $(document).trigger('uploadErrorEvent');
+    };
+
+    xhr.timeout = function(e){
+      console.log('upload timeout');
+      $(document).trigger('timeOutEvent');
+    };
+
+    xhr.loadend = function(e){
+      console.log('upload loadend');
+      //options.files = null;
+    };
+
+    xhr.send(body);
   };
-    /*
-       data = new FormData();
-       data.append('Image', photo_list[0].src);
-       $.ajax({
-       type : 'POST',
-       url : '/upload',
-       dataType : 'json',
-       contentType : false,
-       processData : false,
-       data : data
-       }).done(function(){
-       console.log("Data sent and response received");
-       });
-       photo_list.forEach(function(element){
-       console.log("sending" + element.src);
-       });
-       */
 
-    get = function(options){
-      var 
-        ajax_options = $.extend({}, configMap.options, options);
+  initModule = function(){};
 
-      $.ajax( ajax_options)
-        .done(function(data){
-          $(document).trigger(ajax_options.event_name + 'Finished',  data);
-        });
-    };
+  return {
+    initModule : initModule,
+    send : send
+  };
 
-
-    initModule = function(){
-
-    };
-
-    return {
-      initModule : initModule,
-      sendFiles : sendFiles,
-      get : get
-    };
-
-  })();
+})();

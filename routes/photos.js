@@ -25,7 +25,7 @@ router.route('/')
           photo.image_mime_type = photo.image_mime_type.split('/')[1];
           photo.image_name  = photo.image_name + '_t';
           results.push(photo);
-          console.log(photo);
+          //console.log(photo);
         });
         res.json({success : true, message: results});
       }

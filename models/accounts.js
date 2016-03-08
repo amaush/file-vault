@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
 
 
 accountSchema = new Schema({
-  account_name : { type: String, required: true, index: { unique: true}},
+  account_name : { type: String, required: true, index: { unique: true}, 'default': 'anon_user'},
   email : { type : String, unique:true},
   password : { type: String, required: true, select: false},
   created_on : { type : Date, 'default' : Date.now},

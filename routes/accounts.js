@@ -2,7 +2,7 @@ var
   express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
-  Accounts = require('../models/accounts'),
+  Users = require('../models/users'),
   jwt = require('jsonwebtoken'),
   crypto = require('crypto'),
   config = require('../config');
@@ -50,7 +50,7 @@ router.route('/login')
             });
       }
 
-      Accounts.find({'email' : req.body.email})
+      Users.find({'email' : req.body.email})
         .select('user_name password').exec(function(err, account){
           if(err){ 
             console.log(err);
@@ -87,15 +87,15 @@ router.route('/login')
 
 router.route('/register')
   .post(function (req, res){
-    var account = new Accounts();
+    console.log('register info', req.body);
+    var user = new Users();
 
-    account.account_name = req.body.user_name;
-    account.password = req.body.password;
-    account.email = req.body.email;
-    account.lastLogin = Date.now();
-    account.created_on =  Date.now();
-    account.modified_on = Date.now();
-    account.save(function(err, account){
+    user.password = req.body.password;
+    user.email = req.body.email;
+    user.lastLogin = Date.now();
+    user.created_on =  Date.now();
+    user.modified_on = Date.now();
+    user.save(function(err, account){
       if(err){
         console.log(err);
         if(err.code === 11000){
@@ -104,7 +104,11 @@ router.route('/register')
           res.json({ message : 'Error ' + err});
         }
       }else{
-        res.json({ message : 'New account ' + account.name + ' Created'});
+        res.status(200).json({
+          success: true,
+          message : 'New account  Created'
+        
+        });
       }
     });
   });

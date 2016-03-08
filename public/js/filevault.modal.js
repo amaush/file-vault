@@ -30,10 +30,16 @@ filevault.modal = (function(){
             + '</div>'
           + '</div>'
       ,progress_bar_html : String()
+        + '<div class="">'
+          + '<progress max="100" value="0">0% complete</progress>'
+        + '</div>'
+      /*
         + '<div class="bar">'
           + '<div class="inner-bar"></div>'
           +'<span class="progress"></span>'
         +'</div>'
+        */
+         
       ,login_html : String() 
         + '<header class="account-header" id="account-header">'
           + '<span><a href="">Login</a></span>'
@@ -71,7 +77,7 @@ filevault.modal = (function(){
     },
     stateMap = {          //dynamic info shared across module 
       $container : null,
-      user_files : { },   //store files with objectURL as key 
+      user_files : [ ],   //store files with objectURL as key 
       is_upload_modal : true    //maintain state of last visible modal
     },
     jqueryMap = {            //cache jQuery collections in object
@@ -79,8 +85,8 @@ filevault.modal = (function(){
       $account_header: null,
       $register_form : null
     },
-    fileSize, handleFiles, initModule, setJqueryMap,
-    onDrop, onDragEnter, onDragOver, onUpLoad, onPreviewPaneClick,
+    fileSize, handleFiles, initModule, setJqueryMap, onUploadStart,
+    onDrop, onDragEnter, onDragOver, onUpLoad, onPreviewPaneClick, onUploadFinished,
     onLoginAction, onUploadAction, onLogin, onLogout, onRegister, onFileSelect, 
     onClickModalBackground, onFileBrowse, onRegisterFormClick, onLoginFormClick;
 
@@ -96,6 +102,7 @@ filevault.modal = (function(){
       $drop_zone : $container.find('#filevault-drop-zone'),
       $button : $container.find('#filevault-upload-button'),
       $img_collection : $('<div />').attr({'class' : 'img-container'}),
+      $progress_bar: $('<progress />').attr({'max' : 100, 'value' : 0 }), 
       $modal_background: stateMap.$container.find('#modal-background'),
       $close_modal : stateMap.$container.find('.close')
     };
@@ -144,10 +151,13 @@ filevault.modal = (function(){
       $img.onload = function(){
         window.URL.revokeObjectURL(file);   
       };
-      stateMap.user_files[src] = file;
+      stateMap.user_files.push({
+        file_src: src,
+        file: file
+      });
       $img_wrapper.append($img);
       $img_wrapper.append(fileSize(file.size));
-      $img_wrapper.append(configMap.progress_bar_html);
+      $img_wrapper.append(jqueryMap.$progress_bar.clone().hide()); //('<progress />').attr('data-name', file.name));
       $img_wrapper.append($file_remove_icon);
       jqueryMap.$img_collection.append($img_wrapper);
     }
@@ -168,7 +178,6 @@ filevault.modal = (function(){
   onDrop = function(evt){
     evt.preventDefault();
     evt.stopPropagation();
-    console.log(evt.dataTransfer);
 
     var dt = evt.dataTransfer;
     var files = dt.files;
@@ -190,21 +199,27 @@ filevault.modal = (function(){
 
   //delegate clicks to remove file from preview pane
   onPreviewPaneClick = function(evt){
-    var img_wrapper, img, object_url_list, send,
-        target = $(evt.target);
+    var 
+      img_wrapper, img, send,
+      target = $(evt.target);
     
     evt.preventDefault();
     evt.stopPropagation();
     if(target.is('a')){     
-      //clicked on remove file preview 
+      //clicked on file close icon 
       img_wrapper = target.closest('p.img-wrapper'); 
       img = target.closest('p').find('img')[0];   
 
       //find image related to this event
-      console.log(img);
-      if(!!img_wrapper.siblings('p').length){    //Other files still remain in preview pane
+      //console.log(img);
+      if(!!img_wrapper.siblings('p').length){    
+        //Other files still remain in preview pane
         img_wrapper.remove();
-        delete stateMap.user_files[img.src];
+        stateMap.user_files.forEach(function(file, idx){
+          if(file.file_src === img.src){
+            delete stateMap.user_files[idx];
+          }
+        });
       }else{                                    
         //No files left in preview pane
         img_wrapper.remove();
@@ -212,15 +227,31 @@ filevault.modal = (function(){
         jqueryMap.$preview_pane.hide();
       }
     }else if(target.is(jqueryMap.$button)){
-      object_url_list = Object.keys(stateMap.user_files);
-      send = filevault.model.gallery.send({ 
-        file_map : stateMap.user_files,
-        url_list: object_url_list, 
-        $container : jqueryMap.$preview_pane,
-        files : true
+      //find progress element
+      stateMap.user_files.forEach(function(file, idx){
+        var $tmp = jqueryMap.$preview_pane.find('img[src="' + file.file_src + '"]');
+        file.$progress_container = $tmp.next('progress'); 
       });
-      if(send){ console.log('request successful');}
+
+      send = filevault.model.gallery.send({ 
+        files : stateMap.user_files,
+        is_file_request: true
+      });
     }
+  };
+
+  onUploadStart = function(evt){
+    evt.$progress_container.show();
+  };
+
+  onUploadFinished = function(evt){
+    var $blob_url;
+
+    $progress = evt.$progress_container.hide()
+    $progress.hide();
+    $progress.parent('p').empty().text('Upload Completed successfully');
+    $blob_url = $progress.sibling('img').attr('src');
+    console.log('blob ', stateMap.user_files[$blob_url]);
   };
 
   onLoginFormClick = function(evt){
@@ -240,6 +271,7 @@ filevault.modal = (function(){
     }else{
       console.log('email :%s pass: %s ', email.val(), password.val());
     }
+    filevault.model.user.request({email: email.val(), password: password.val()});
     evt.preventDefault();
   };
 
@@ -262,6 +294,7 @@ filevault.modal = (function(){
     password_confirm = passwords.eq(1);
     if(password.val() === password_confirm.val()){
       console.log('passwords match!');
+      filevault.model.user.request({email: email.val(), password: password.val(), password_confirm: password_confirm.val()});
     }else{
       jqueryMap.$register_password_error.text('Passwords are not matching');
       jqueryMap.$register_password_error.show();
@@ -317,7 +350,7 @@ filevault.modal = (function(){
   };
 
   initModule = function ($container){
-    $.event.props.push('dataTransfer');   //allow Jquery to attach drag n drop files
+    $.event.props.push('dataTransfer');   //give jQuery an object to attach drag n drop files to 
     stateMap.$container = $container;
     $container.append(configMap.core_html);
     setJqueryMap();
@@ -336,6 +369,8 @@ filevault.modal = (function(){
     $(document).on('loginClick', onLoginAction);
     $(document).on('uploadClick', onUploadAction);
     $(document).on('signout', onLogout);
+    $(document).on('uploadStart', onUploadStart);
+    $(document).on('uploadFinished', onUploadFinished);
   };
 
   return {

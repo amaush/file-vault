@@ -7,7 +7,65 @@
 filevault.model = (function(){
   'use strict';
 
-  var photo, gallery, makePhoto;
+  var photo, gallery, makePhoto, user;
+
+  user = (function(){
+    var 
+      configMap = {
+        is_anon: true,
+        token : ''
+      },
+    initModule, request, onCompleteLogin, logout;
+
+    request = function(request_data){
+      console.log('BODY: ', request_data);
+      var 
+        event_name,
+        myre = /\/\w+\/(\w+)$/, 
+        request = { };
+      
+      if(request_data.password_confirm){
+        request.url = '/user/register';
+      }else if(request_data.password){
+        request.url = '/user/login';
+      }else if(request_data.logout){
+        request.url = '/user/logout';
+      }
+
+      //request.url = '/user/register';
+      request.method =  'POST';
+      event_name = myre.exec(request.url);
+      event_name.shift();
+      console.log('eventname ', event_name);
+
+      request.event_name = event_name.pop();
+
+      request.body = request_data;
+
+      console.log('REQUEST: ', request);
+      filevault.data.send(request);
+     
+    };
+
+    onCompleteLogin = function(evt){
+      console.log('LOGIN RESPONSE', evt.response);
+      
+    };
+
+    initModule = function(){
+      $(document).on('loginFinished', onCompleteLogin);
+
+    };
+
+
+    return {
+      request: request,
+      initModule: initModule
+    };
+
+
+
+  })();
 
   photo = (function(){
     var 
@@ -59,8 +117,8 @@ filevault.model = (function(){
 
     _renderImage = function(photo){
       jqueryMap.$content.empty();
-      //jqueryMap.$content.append(photo);
-      jqueryMap.$content.css({'background-image': photo});
+      jqueryMap.$content.append(photo);
+      //jqueryMap.$content.css({'background-image': photo});
       _renderSideBar();
     };
 
@@ -107,6 +165,7 @@ filevault.model = (function(){
   })();
 
   makePhoto = function(photo_map){
+    //console.log('photo map', photo_map);
     var 
       $img, img_path, 
     photo = photo_map;
@@ -124,7 +183,6 @@ filevault.model = (function(){
     return $img;
   };
 
-
   gallery = (function(){
     var 
       configMap = {
@@ -132,11 +190,12 @@ filevault.model = (function(){
       },
     stateMap = {        //dynamic info shared across module 
       $container : null, 
+      is_initial_load : true,
       photo_db : [] 
     },
     jqueryMap = { },      //cache jQuery collections in object
-    photo, setJqueryMap, initModule, _renderGallery, updateGallery, get_thumbnails,
-    onPhotoClick, onResponseDone, send;
+    setJqueryMap, initModule, _renderGallery, get_thumbnails,
+    onGalleryLoad , onPhotoClick, onResponseDone, send;
 
     setJqueryMap = function(){
       var $container = stateMap.$container;
@@ -146,62 +205,76 @@ filevault.model = (function(){
       };
     };
 
-    send = function(options){
-      var file_mode = options.files || null;
+    send = function(request_data){
+      //var file_mode = request_body.files || null;
+      var 
+        request_options = { }, 
+        request = { };
 
-      //send request to data layer
-      file_mode ? filevault.data.sendFiles(options) : filevault.data.get(options);
-    };
+      request.url = '/image';
+      request.method = request_data? 'POST' : 'GET';
+      request.event_name = request.method === 'POST' ? 'upload' : 'populateGallery';
 
-    updateGallery = function(evt, data){
-
-      if(!data){
-        filevault.data.get({
-          event_name : 'updateGallery'
+      console.log('request options: ', request_options);
+      if(request_data && request_data.is_file_request){
+        request_data.files.forEach(function(file){
+          request.body = file;
+          filevault.data.send(request);
         });
+      }else{
+        request.body = request_data;
+        filevault.data.send(request);
       }
-      //_renderGallery();
     };
 
     get_thumbnails = function(){
       return stateMap.photo_db;
     };
 
-    _renderGallery = function(data){
+    _renderGallery = function(){
       jqueryMap.$content.detach();
       jqueryMap.$content.empty();
-      if(data){
-        data.forEach(function(photo, idx){
+      if(stateMap.photo_db.length){
+        stateMap.photo_db.forEach(function(photo, idx){
           var new_img =  makePhoto(photo);
           jqueryMap.$content.append(new_img);
           stateMap.photo_db.push(new_img);
         });
       }else{
-        photo_db.forEach(function(photo, idx){
-          jqueryMap.$content.append(photo);
-        });
+        jqueryMap.$content.html('<div class="error">Content failed to load</div>');
       }
       jqueryMap.$container.append(jqueryMap.$content);
     };
 
     onPhotoClick = function(evt){
-      var 
-        path;
-      console.log('toggling gallery');
-
+      var $target;
+      //console.log('toggling gallery');
+      $target = $(evt.target);
+      if($target.is('img')){
+        $(document).trigger('toggleGallery', evt.target);
+      }
       //path = evt.target.getAttribute('src').split('/').pop();
-      $(document).trigger('toggleGallery', evt.target);
     };
 
-    onResponseDone = function(evt, result){
-      var
-        success = result.success,
-      message = result.message;
+    onGalleryLoad = function(evt){
+     _renderGallery(); 
+    };
 
+    onResponseDone = function(evt){
+      var
+        success =  evt.response.success,
+        message = evt.response.message;
+
+      console.log('response done');
+      console.log(evt.response.success);
       if(success){
-        _renderGallery(message);
-      }else{
-        jqueryMap.$content.html('<div class="error">Message failed with ' + message);
+        message.forEach(function(image, idx){
+          stateMap.photo_db.push(image);
+        });
+      }
+      if(stateMap.is_initial_load){
+        _renderGallery();
+        stateMap.is_initial_load = false;
       }
     };
 
@@ -210,14 +283,16 @@ filevault.model = (function(){
       stateMap.$container.html(configMap.core_html);
 
       setJqueryMap();
+
+      //populate gallery on initial application load
+      send();
       jqueryMap.$content.on('click', onPhotoClick);
-      $(document).on('updateGalleryFinished', onResponseDone);
-      $(document).on('uploadFinished', onResponseDone);
+      $(document).on('populateGalleryFinished', onResponseDone);
+      $(document).on('galleryShow', onGalleryLoad);
     };
 
     return {
       initModule: initModule,
-      updateGallery: updateGallery,
       send : send,
       get_thumbnails : get_thumbnails
     };
@@ -225,7 +300,8 @@ filevault.model = (function(){
 
   return {
     gallery : gallery,
-    photo : photo
+    photo : photo,
+    user: user
   };
 
 })();

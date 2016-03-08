@@ -89,7 +89,6 @@ filevault.main = (function () {
     console.log('upload finished evt');
 
     toggleModal();
-    //router.navigate(evt.url);
     //setTimeout(toggleModal, 2000);
   };
 
@@ -101,18 +100,15 @@ filevault.main = (function () {
   historyChange = function(evt){
     if(!history.state){
       console.log('empty history');
-      history.replaceState(null, '/homePage', location.pathname);
-      router.navigate(location.pathname);
+      history.replaceState(null, null, location.pathname);
       return true;
     }
-
-    router.navigate(history.state.url, history.state.path);
   };
      
   router = (function(path){
     var 
       add, navigate,
-      base = {'/' : filevault.model.gallery.updateGallery},
+      base = {'/' : filevault.model.gallery.send},
       routes = {};
 
     add = function(regex, callback){
@@ -158,8 +154,9 @@ filevault.main = (function () {
     stateMap.$container = $container;
     stateMap.$container.html(configMap.core_html);
     setJqueryMap();
-    router.add('/', filevault.model.gallery.updateGallery);
-    router.add(/^\/[^\w|\S]/, filevault.model.photo.showPhoto); 
+
+    //router.add('/', filevault.model.gallery.updateGallery);
+   // router.add(/^\/[^\w|\S]/, filevault.model.photo.showPhoto); 
 
     //filevault.model.initModule($container);
     filevault.data.initModule();
