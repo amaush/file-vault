@@ -28,25 +28,26 @@
 
 #filevault-photos {
     border: 1px solid #4479BA;
-    margin: 0%;
+    margin:1% 1%;
     padding: 0%;
-    width: 65%;
+    width: 68%;
     background-color: #222;
     border-radius: 10px;
     display: inline-block;
     overflow: hidden;
+    height: 500px;
 }
 
 #filevault-side-bar {
     display: inline-block;
     width: 30%;
-    padding:2% 1%;
+    padding:1% 1%;
     vertical-align: top;
-    border: 1px solid #222;
     border-radius: 10px;
     background-color: #2c2c2c;
+    height: 600px;
 }
 
 #filevault-side-bar img{
-    width: 90px;
+    width: 30%;
 }

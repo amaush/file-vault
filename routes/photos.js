@@ -25,7 +25,7 @@ router.route('/')
           photo.image_mime_type = photo.image_mime_type.split('/')[1];
           photo.image_name  = photo.image_name + '_t';
           results.push(photo);
-          //console.log(photo);
+          console.log(photo);
         });
         res.json({success : true, message: results});
       }
@@ -128,13 +128,44 @@ router.route('/')
 router.route('/:id')
 .get(function(req, res, next){
   console.log('want photo with id %s?', req.id);
-  res.json({success: false, message: req.id});
+  res.json({success: false, message: req.params.id});
 })
 .put(function(req, res, next){
   console.log('want to edit photo %s', req.id);  
+  Photos.findbById(req.params.id, function(err, photo){
+      if(err){
+        res.status(404).json({success: false,
+            message: 'unable to update record'});
+      }
+
+      if(req.body.email) photo.title = req.body.title;
+     
+      photo.save(function(err){
+        if(err){
+          console.log(err);
+          res.status(500).json({
+            success: false,
+            message : 'unable to update record'
+          });
+        }else{
+          res.json({
+            success: true,
+            message : 'updated successfully'
+          });
+        }
+      });
+    });
 })
 .delete(function(req, res, next){
   console.log('want to delete photo?');
+  Photos.remove({ _id: req.params.id}, function(req, res){
+    if(err){
+      res.status(400).json({
+        success: false,
+        message: 'Could not delete message'
+      });
+    }
+  });
 });
 
 

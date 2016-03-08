@@ -271,7 +271,7 @@ filevault.modal = (function(){
     }else{
       console.log('email :%s pass: %s ', email.val(), password.val());
     }
-    filevault.model.user.request({email: email.val(), password: password.val()});
+    filevault.user.request({email: email.val(), password: password.val()});
     evt.preventDefault();
   };
 
@@ -294,7 +294,7 @@ filevault.modal = (function(){
     password_confirm = passwords.eq(1);
     if(password.val() === password_confirm.val()){
       console.log('passwords match!');
-      filevault.model.user.request({email: email.val(), password: password.val(), password_confirm: password_confirm.val()});
+      filevault.user.request({email: email.val(), password: password.val(), password_confirm: password_confirm.val()});
     }else{
       jqueryMap.$register_password_error.text('Passwords are not matching');
       jqueryMap.$register_password_error.show();

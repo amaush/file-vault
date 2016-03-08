@@ -10,6 +10,7 @@ gulp.task('scripts', function(){
             //, './public/js/filevault.util_b.js'
             , './public/js/filevault.gallery.js'
             , './public/js/filevault.modal.js'
+            , './public/js/filevault.user.js'
             , './public/js/filevault.main.js'])
         .pipe(concat('scripts.js'))
         .pipe(uglify())

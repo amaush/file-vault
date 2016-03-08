@@ -7,67 +7,9 @@
 filevault.model = (function(){
   'use strict';
 
-  var photo, gallery, makePhoto, user;
+  var photo, gallery, makePhoto;
 
-  user = (function(){
-    var 
-      configMap = {
-        is_anon: true,
-        token : ''
-      },
-    initModule, request, onCompleteLogin, logout;
-
-    request = function(request_data){
-      console.log('BODY: ', request_data);
-      var 
-        event_name,
-        myre = /\/\w+\/(\w+)$/, 
-        request = { };
-      
-      if(request_data.password_confirm){
-        request.url = '/user/register';
-      }else if(request_data.password){
-        request.url = '/user/login';
-      }else if(request_data.logout){
-        request.url = '/user/logout';
-      }
-
-      //request.url = '/user/register';
-      request.method =  'POST';
-      event_name = myre.exec(request.url);
-      event_name.shift();
-      console.log('eventname ', event_name);
-
-      request.event_name = event_name.pop();
-
-      request.body = request_data;
-
-      console.log('REQUEST: ', request);
-      filevault.data.send(request);
-     
-    };
-
-    onCompleteLogin = function(evt){
-      console.log('LOGIN RESPONSE', evt.response);
-      
-    };
-
-    initModule = function(){
-      $(document).on('loginFinished', onCompleteLogin);
-
-    };
-
-
-    return {
-      request: request,
-      initModule: initModule
-    };
-
-
-
-  })();
-
-  photo = (function(){
+   photo = (function(){
     var 
       configMap = {
         core_html : String() 
@@ -281,7 +223,6 @@ filevault.model = (function(){
     initModule = function($container){
       stateMap.$container = $container;
       stateMap.$container.html(configMap.core_html);
-
       setJqueryMap();
 
       //populate gallery on initial application load
@@ -301,7 +242,6 @@ filevault.model = (function(){
   return {
     gallery : gallery,
     photo : photo,
-    user: user
   };
 
 })();

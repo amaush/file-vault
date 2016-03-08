@@ -1,4 +1,4 @@
-#filevault{
+:filevault{
     padding : 8px;
     min-height : 500px;
     min-width : 500px;
@@ -12,7 +12,6 @@
 .filevault-head{
     height: 50px;
     color: #FFF;
-    background : #4479AB;
     width : 100%;
 }
 
@@ -29,7 +28,7 @@
     height: 50px;
     width:15%;
     padding: 15px;
-    background: #777;
+    background: #353533;
 }
 
 #filevault-acct{
@@ -38,7 +37,7 @@
     color: inherit;
     vertical-align: top;
     height: 50px;
-    width: 25%;
+    width: 20%;
     padding: 15px;
     margin-left: 15%;
 }
@@ -54,7 +53,6 @@
     position: relative;
     width: 100%;
     top: 10px;
-    background: #f9f9f9;
 }
 
 #filevault-upload-form{

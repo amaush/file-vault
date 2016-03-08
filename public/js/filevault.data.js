@@ -12,14 +12,20 @@ filevault.data = (function(){
 
   send = function(request_info){
     var
-      file, xhr, request_body, body;
+      file, xhr, token, request_body, body;
 
     request_body = request_info ? request_info.body : null;
     file = request_body ? request_body.file : null;
 
     xhr = new XMLHttpRequest();
-
     xhr.open(request_info.method, request_info.url);
+
+    token = sessionStorage.getItem('x-token');
+    if(token){
+      console.log('TOKEN: ', token);
+      xhr.setRequestHeader('x-auth', token);
+    }
+
     if(!file){
       xhr.setRequestHeader('Content-Type', 'application/json');
       body = JSON.stringify(request_body);
@@ -73,7 +79,6 @@ filevault.data = (function(){
   initModule = function(){};
 
   return {
-    initModule : initModule,
     send : send
   };
 

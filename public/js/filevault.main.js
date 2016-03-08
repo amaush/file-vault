@@ -159,10 +159,11 @@ filevault.main = (function () {
    // router.add(/^\/[^\w|\S]/, filevault.model.photo.showPhoto); 
 
     //filevault.model.initModule($container);
-    filevault.data.initModule();
+    //filevault.data.initModule();
     filevault.modal.initModule(jqueryMap.$upload_modal);
     filevault.model.gallery.initModule(jqueryMap.$gallery_container);
-    filevault.model.photo.initModule(jqueryMap.$photo_container);       //MUST fIX
+    filevault.model.photo.initModule(jqueryMap.$photo_container);       //TODO split model from view/controller
+    filevault.user.initModule(jqueryMap.$acct);
 
     jqueryMap.$global_upload_button.on('click', onUploadClick);
     jqueryMap.$acct.on('click', onLoginClick);
