@@ -18,8 +18,14 @@ router.route('/')
   console.log('Requested photos root ');
   Photos.find({},
       '-_id image_path image_name image_mime_type',
-      {sort: {images_created_on: -1}, limit: 25},
+      {sort: {images_created_on: -1}, limit: 15},
       function(err, photos){
+        if(err){
+         return  res.status(500).json({
+            success: false,
+            message: 'Unable to complete request due to Server Error'
+          });
+        }
         photos.forEach(function(photo, index){
           photo.image_path = photo.image_path.replace(/public/, '');
           photo.image_mime_type = photo.image_mime_type.split('/')[1];
@@ -27,7 +33,7 @@ router.route('/')
           results.push(photo);
           console.log(photo);
         });
-        res.json({success : true, message: results});
+        return res.json({success : true, message: results});
       }
       );
 })
@@ -100,11 +106,11 @@ router.route('/')
                 var message = err.errors[key].message;
                 console.log('Validation error for "%s": %s', key, message);
                 //whats the appropriate response to send here??
-                res.status(500).json({success: false, message: ''});
+                return res.status(500).json({success: false, message: ''});
               });
             }else{
               console.log("Image %s saved to: ",photo._id, photo.image_path);
-              res.json({success: true, message:[ photo.image_path + '/' +  photo.image_name + '.' + photo.image_mime_type.split('/')[1]]});
+              return res.json({success: true, message:[ photo.image_path + '/' +  photo.image_name + '.' + photo.image_mime_type.split('/')[1]]});
             }
           });
           console.log("Upload Finished of " + filename);              
@@ -128,13 +134,13 @@ router.route('/')
 router.route('/:id')
 .get(function(req, res, next){
   console.log('want photo with id %s?', req.id);
-  res.json({success: false, message: req.params.id});
+  return res.json({success: false, message: req.params.id});
 })
 .put(function(req, res, next){
   console.log('want to edit photo %s', req.id);  
   Photos.findbById(req.params.id, function(err, photo){
       if(err){
-        res.status(404).json({success: false,
+        return res.status(404).json({success: false,
             message: 'unable to update record'});
       }
 
@@ -143,12 +149,12 @@ router.route('/:id')
       photo.save(function(err){
         if(err){
           console.log(err);
-          res.status(500).json({
+          return res.status(500).json({
             success: false,
             message : 'unable to update record'
           });
         }else{
-          res.json({
+          return res.json({
             success: true,
             message : 'updated successfully'
           });
@@ -160,7 +166,7 @@ router.route('/:id')
   console.log('want to delete photo?');
   Photos.remove({ _id: req.params.id}, function(req, res){
     if(err){
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'Could not delete message'
       });

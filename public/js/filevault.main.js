@@ -33,7 +33,7 @@ filevault.main = (function () {
     },
     jqueryMap = { },      //cache jQuery collections in object
     setJqueryMap, initModule, onToggleGallery, toggleModal, router, 
-    onUploadClick, onLoginClick, onLogOutClick, onUploadDone, onToggleModal, onToggleState, historyChange;
+    onUploadClick, onLoginClick, onLogOutClick, onUploadComplete, onToggleModal, onToggleState, historyChange;
 
   setJqueryMap = function(){
     var $container = stateMap.$container;
@@ -71,13 +71,12 @@ filevault.main = (function () {
     jqueryMap.$upload_modal.toggle();
   };
 
-  //called by
-  onToggleState = function(){
-    console.log('toggling State');
+  onToggleState = function(evt){
     if(stateMap.is_gallery_visible){
-     jqueryMap.$photo_container.hide();
-     jqueryMap.$side_bar.hide();
-     stateMap.is_gallery_visible = false;
+      console.log('toggling State');
+      jqueryMap.$photo_container.hide();
+      jqueryMap.$side_bar.hide();
+      stateMap.is_gallery_visible = false;
     }else{
       jqueryMap.$gallery_container.show();
       stateMap.is_gallery_visible = true;
@@ -85,14 +84,14 @@ filevault.main = (function () {
   };
 
   //triggered from data.get after sending files
-  onUploadDone = function(evt){
+  onUploadComplete = function(evt){
     console.log('upload finished evt');
-
     toggleModal();
+    onToggleState();
     //setTimeout(toggleModal, 2000);
   };
 
-  onToggleGallery = function(){
+  onToggleGallery = function(evt){
     console.log('toggling gallery');
     jqueryMap.$gallery_container.toggle();
   };
@@ -167,8 +166,11 @@ filevault.main = (function () {
 
     jqueryMap.$global_upload_button.on('click', onUploadClick);
     jqueryMap.$acct.on('click', onLoginClick);
+    //hide sidebar and photo pane 
+    //onToggleState();
+    //hide modal form
     toggleModal();
-    $(document).on('uploadFinished', onUploadDone);
+    $(document).on('uploadComplete', onUploadComplete);
     $(document).on('toggleModal', onToggleModal);
     $(document).on('toggleGallery', onToggleGallery);
     $(document).on('toggleState', onToggleState);

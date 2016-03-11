@@ -21,7 +21,7 @@ filevault.model = (function(){
         photo_db : { }
       },
       jqueryMap = { },
-      setJqueryMap, initModule, showPhoto, _renderSideBar, _renderImage,
+      setJqueryMap, initModule, showPhoto, renderSideBar, renderImage,
       getImagePath, onTogglePhoto, onThumbClick, onPhotoClick;
 
     setJqueryMap = function(){
@@ -54,17 +54,17 @@ filevault.model = (function(){
       new_photo = makePhoto(path);
       //stateMap[path.image_name] = new_photo;
       history.pushState({url: '/' + path.image_name, path: [path.image_path, path.image_name].join('/')}, 'Image', path.image_name);
-      _renderImage(new_photo);
+      renderImage(new_photo);
     };
 
-    _renderImage = function(photo){
+    renderImage = function(photo){
       jqueryMap.$content.empty();
       jqueryMap.$content.append(photo);
       //jqueryMap.$content.css({'background-image': photo});
-      _renderSideBar();
+      renderSideBar();
     };
 
-   _renderSideBar = function(){
+   renderSideBar = function(){
       var thumbs;
       
       jqueryMap.$side_bar.empty();
@@ -133,10 +133,12 @@ filevault.model = (function(){
     stateMap = {        //dynamic info shared across module 
       $container : null, 
       is_initial_load : true,
+      scrollCursor: 0,
+      renderSize: 15,
       photo_db : [] 
     },
     jqueryMap = { },      //cache jQuery collections in object
-    setJqueryMap, initModule, _renderGallery, get_thumbnails,
+    setJqueryMap, initModule, renderGallery, get_thumbnails,
     onGalleryLoad , onPhotoClick, onResponseDone, send;
 
     setJqueryMap = function(){
@@ -148,16 +150,14 @@ filevault.model = (function(){
     };
 
     send = function(request_data){
-      //var file_mode = request_body.files || null;
       var 
         request_options = { }, 
         request = { };
 
       request.url = '/image';
-      request.method = request_data? 'POST' : 'GET';
+      request.method = request_data ? 'POST' : 'GET';
       request.event_name = request.method === 'POST' ? 'upload' : 'populateGallery';
 
-      console.log('request options: ', request_options);
       if(request_data && request_data.is_file_request){
         request_data.files.forEach(function(file){
           request.body = file;
@@ -173,7 +173,7 @@ filevault.model = (function(){
       return stateMap.photo_db;
     };
 
-    _renderGallery = function(){
+    renderGallery = function(){
       jqueryMap.$content.detach();
       jqueryMap.$content.empty();
       if(stateMap.photo_db.length){
@@ -199,7 +199,7 @@ filevault.model = (function(){
     };
 
     onGalleryLoad = function(evt){
-     _renderGallery(); 
+     renderGallery(); 
     };
 
     onResponseDone = function(evt){
@@ -208,14 +208,13 @@ filevault.model = (function(){
         message = evt.response.message;
 
       console.log('response done');
-      console.log(evt.response.success);
       if(success){
         message.forEach(function(image, idx){
           stateMap.photo_db.push(image);
         });
       }
       if(stateMap.is_initial_load){
-        _renderGallery();
+        renderGallery();
         stateMap.is_initial_load = false;
       }
     };
@@ -229,7 +228,7 @@ filevault.model = (function(){
       send();
       jqueryMap.$content.on('click', onPhotoClick);
       $(document).on('populateGalleryFinished', onResponseDone);
-      $(document).on('galleryShow', onGalleryLoad);
+      //$(document).on('galleryShow', onGalleryLoad);
     };
 
     return {

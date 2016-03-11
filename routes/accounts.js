@@ -67,7 +67,7 @@ router.post('/login', function(req, res){
             name : user.name,
             email : user.email
           }, config.secret, {
-            expires: 1440 //expires 24 hours 
+            expires: 100 //time in seconds
           });
 
           res.json({

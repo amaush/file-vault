@@ -1,4 +1,4 @@
-/**
+j**
  *
  * CSS for Image Gallery
  *
@@ -22,32 +22,32 @@
     width: 100%;
     top: 10px;
     background: #f9f9f9;
+    text-align: center;
 }
 
 .filevault-x-select {}
 
 #filevault-photos {
     border: 1px solid #4479BA;
-    margin:1% 1%;
+    margin: 0%;
     padding: 0%;
-    width: 68%;
+    width: 65%;
     background-color: #222;
     border-radius: 10px;
     display: inline-block;
     overflow: hidden;
-    height: 500px;
 }
 
 #filevault-side-bar {
     display: inline-block;
     width: 30%;
-    padding:1% 1%;
+    padding:2% 1%;
     vertical-align: top;
+    border: 1px solid #222;
     border-radius: 10px;
     background-color: #2c2c2c;
-    height: 600px;
 }
 
 #filevault-side-bar img{
-    width: 30%;
+    width: 90px;
 }

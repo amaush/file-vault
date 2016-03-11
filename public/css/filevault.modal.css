@@ -125,22 +125,19 @@ legend {
 #modal-content {
     background-color: white;
     border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
     box-shadow: 0 0 20px 0 #222;
-    -webkit-box-shadow: 0 0 20px 0 #222;
-    -moz-box-shadow: 0 0 20px 0 #222;
-    display: inline-block;
-    vertical-align: top;
     height: 100%;
-    left: 50%;
     margin: -120px 0 0 -160px;
     padding: 10px;
-    position: relative;
-    top: 30%;
     width: 375px;
     z-index: 9999;
     border: 8px solid #4479BA;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .close{

@@ -33,13 +33,6 @@ filevault.modal = (function(){
         + '<div class="">'
           + '<progress max="100" value="0">0% complete</progress>'
         + '</div>'
-      /*
-        + '<div class="bar">'
-          + '<div class="inner-bar"></div>'
-          +'<span class="progress"></span>'
-        +'</div>'
-        */
-         
       ,login_html : String() 
         + '<header class="account-header" id="account-header">'
           + '<span><a href="">Login</a></span>'
@@ -85,7 +78,7 @@ filevault.modal = (function(){
       $account_header: null,
       $register_form : null
     },
-    fileSize, handleFiles, initModule, setJqueryMap, onUploadStart,
+    createDomImage, fileSize, handleFiles, initModule, setJqueryMap, flushImage, onUploadStart,
     onDrop, onDragEnter, onDragOver, onUpLoad, onPreviewPaneClick, onUploadFinished,
     onLoginAction, onUploadAction, onLogin, onLogout, onRegister, onFileSelect, 
     onClickModalBackground, onFileBrowse, onRegisterFormClick, onLoginFormClick;
@@ -134,11 +127,6 @@ filevault.modal = (function(){
       if(!imageType.test(file.type)){
         continue;     // image is not an object. Failing silently
       }
-      var $file_remove_icon = $('<span></span>').attr({
-            'class' : 'remove-file'
-          })
-          .html('<a href="">X</a>'), 
-        $img_wrapper = $('<p></p>').attr({'class' : 'img-wrapper' });
 
       var $img = $('<img>').eq(0);
       var src = window.URL.createObjectURL(file);
@@ -146,21 +134,32 @@ filevault.modal = (function(){
         src : src, 
         height : 60,
         title : file.name,
+        size : fileSize(file.size)
       });
 
       $img.onload = function(){
-        window.URL.revokeObjectURL(file);   
+        window.URL.revokeObjectURL($img[0].src);   
       };
+
       stateMap.user_files.push({
         file_src: src,
         file: file
       });
-      $img_wrapper.append($img);
-      $img_wrapper.append(fileSize(file.size));
-      $img_wrapper.append(jqueryMap.$progress_bar.clone().hide()); //('<progress />').attr('data-name', file.name));
-      $img_wrapper.append($file_remove_icon);
-      jqueryMap.$img_collection.append($img_wrapper);
+      createDomImage($img);
     }
+  };
+
+  createDomImage = function($img){
+    var 
+      $img_wrapper = $('<p></p>').attr({'class' : 'img-wrapper' }),
+      $file_remove_icon =
+        $('<span></span>').attr({'class' : 'remove-file'}).html('<a href="">X</a>');
+
+    $img_wrapper.append($img);
+    $img_wrapper.append($('<p/>').text($img[0].size));
+    $img_wrapper.append(jqueryMap.$progress_bar.clone().hide()); //('<progress />').attr('data-name', file.name));
+    $img_wrapper.append($file_remove_icon);
+    jqueryMap.$img_collection.append($img_wrapper);
     jqueryMap.$preview_pane.append(jqueryMap.$img_collection);
   };
 
@@ -200,40 +199,35 @@ filevault.modal = (function(){
   //delegate clicks to remove file from preview pane
   onPreviewPaneClick = function(evt){
     var 
-      img_wrapper, img, send,
-      target = $(evt.target);
+      $img_wrapper, img, 
+      $target = $(evt.target);
     
     evt.preventDefault();
     evt.stopPropagation();
-    if(target.is('a')){     
-      //clicked on file close icon 
-      img_wrapper = target.closest('p.img-wrapper'); 
-      img = target.closest('p').find('img')[0];   
-
-      //find image related to this event
-      //console.log(img);
-      if(!!img_wrapper.siblings('p').length){    
+    if($target.is('a')){     
+      //find related img element
+      $img_wrapper = $target.closest('p.img-wrapper'); 
+      img = $target.closest('p').find('img')[0];   
+      if(!!$img_wrapper.siblings('p').length){    
         //Other files still remain in preview pane
-        img_wrapper.remove();
-        stateMap.user_files.forEach(function(file, idx){
-          if(file.file_src === img.src){
-            delete stateMap.user_files[idx];
-          }
-        });
+        $img_wrapper.remove();
+        flushImage(img.src);
+        console.log('stateMap after remove action: ', stateMap.user_files.length);
       }else{                                    
         //No files left in preview pane
-        img_wrapper.remove();
-        stateMap.user_files = { };
+        console.log('files in stateMap: ', stateMap.user_files.length);
+        $img_wrapper.remove();
+        stateMap.user_files = [ ];
         jqueryMap.$preview_pane.hide();
       }
-    }else if(target.is(jqueryMap.$button)){
+    }else if($target.is(jqueryMap.$button)){
       //find progress element
       stateMap.user_files.forEach(function(file, idx){
-        var $tmp = jqueryMap.$preview_pane.find('img[src="' + file.file_src + '"]');
-        file.$progress_container = $tmp.next('progress'); 
+        var $sibling = jqueryMap.$preview_pane.find('img[src="' + file.file_src + '"]');
+        file.$progress_bar = $sibling.siblings('progress'); 
       });
 
-      send = filevault.model.gallery.send({ 
+      filevault.model.gallery.send({ 
         files : stateMap.user_files,
         is_file_request: true
       });
@@ -241,17 +235,32 @@ filevault.modal = (function(){
   };
 
   onUploadStart = function(evt){
-    evt.$progress_container.show();
+    console.log('upload fired');
+    evt.$progress_bar.show();
+    //remove close icon
+    evt.$progress_bar.next('span').remove();
   };
 
   onUploadFinished = function(evt){
-    var $blob_url;
+    var
+      $blob_url, 
+      $progress_wrapper;
+    //console.log(Object.keys(stateMap.user_files[0].$progress_container));
 
-    $progress = evt.$progress_container.hide()
-    $progress.hide();
-    $progress.parent('p').empty().text('Upload Completed successfully');
-    $blob_url = $progress.sibling('img').attr('src');
-    console.log('blob ', stateMap.user_files[$blob_url]);
+    setTimeout(function(){
+      $blob_url = evt.$progress_bar.siblings('img').attr('src');
+      $progress_wrapper = evt.$progress_bar.parent('p').empty().text('Upload Completed successfully');
+      evt.$progress_bar.remove();
+      flushImage($blob_url);
+      if(!stateMap.user_files.length){
+        jqueryMap.$preview_pane.find('div.img-container').remove();
+        jqueryMap.$img_collection.empty();
+        jqueryMap.$preview_pane.hide();
+      setTimeout(function(){
+        $(document).trigger('uploadComplete');
+        }, 3000);
+      }
+    }, 3000);
   };
 
   onLoginFormClick = function(evt){
@@ -347,6 +356,15 @@ filevault.modal = (function(){
   onClickModalBackground = function(evt){
     $(document).trigger('toggleModal');
     evt.preventDefault();
+  };
+
+  flushImage = function(img_src){
+    for(var i = 0 ; i < stateMap.user_files.length; i++){
+      if(stateMap.user_files[i].file_src === img_src){
+        console.log('found %d: %s ', i, stateMap.user_files[i].file_src);
+        stateMap.user_files.splice(i, 1);
+      }
+    }
   };
 
   initModule = function ($container){
