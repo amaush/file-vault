@@ -9,12 +9,12 @@ filevault.data = (function(){
   'use strict';
 
   var 
-    initModule, send;
+    initModule, send, ajaxService;
   
   send = function(request_info){
     var
-      request, file, xhr, token, request_body, body,
-      onProgressHandler,  onLoadHandler, onErrorHandler, onLoadStartHandler, onTimeoutHandler, onLoadEnd;
+      file, xhr, token, request_body, body,
+      onErrorHandler, onTimeoutHandler, onLoadEnd;
 
 
     request_body = request_info ? request_info.body : null;
@@ -77,6 +77,8 @@ filevault.data = (function(){
 
     xhr.send(body);
   };
+
+  ajaxService = function(){};
 
   
   initModule = function(){};

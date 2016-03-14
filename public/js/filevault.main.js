@@ -102,6 +102,7 @@ filevault.main = (function () {
       history.replaceState(null, null, location.pathname);
       return true;
     }
+    console.log(history.state);
   };
      
   router = (function(path){

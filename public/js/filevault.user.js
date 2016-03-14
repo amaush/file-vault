@@ -1,4 +1,5 @@
 filevault.user = (function(){
+  'use strict';
   var 
     configMap = {
       is_anon: true,

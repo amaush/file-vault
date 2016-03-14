@@ -5,6 +5,7 @@
  
 
 var filevault = (function () {
+  'use strict';
   var initModule = function($container){
     //initialise master controller
     filevault.main.initModule($container);    
