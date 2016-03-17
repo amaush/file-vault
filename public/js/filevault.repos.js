@@ -10,8 +10,12 @@ filevault.model = (function(){
 
   var repo, comment, image, user;
 
-  user = {
-    id: null
+  sucessLogin = function(status, response, jqXHR){
+
+  };
+
+  failedLogin = function(status, response, jqXHR){
+
   };
 
   events = {
@@ -27,6 +31,8 @@ filevault.model = (function(){
     }
   };
 
+  Image.create(data){
+      };
   imageModel = {
     id: null,
     title: null,
@@ -42,7 +48,10 @@ filevault.model = (function(){
     link: null,
     comment_preview: null,
     comment_count: null,
-    owner_id: null
+    owner_id: null,
+    create: function(data){
+      
+    }
   };
 
   commentModel = {
@@ -100,23 +109,102 @@ filevault.model = (function(){
     return photo;
   };
 
+  urlMap = {
+    root: '/',
+    album: '/album',
+    album_by_id: '/album/:id',
+    user: '/user/',
+    authenticate: '/user/auth',
+    login: '/user/login',
+    user_albums: '/user/album',
+    album_by_user: '/user/album/:id',
+    image_by_id: '/image/:id',
+    comment: '/comments/:id',
+    description: '/image/:id/description',
+    title: '/image/:id/title'
+  };
+  user = {
+    id: null,
+    login: function(){
+      return $.post({
+        url: '/login', 
+        method: 'POST', 
+        dataType: 'json',
+        success: successLogin,
+        error: failedLogin
+      });
+    },
+    register: function(){
+      return $.post('/register', 'POST', 'json');
+    },
+
+  };
+  
+
+
+  user = {
+    login : function(){
+      return $.ajax({
+        url: '/user/login', 
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(request.body) 
+      });
+    },
+    register : function(){
+      return $.ajax({
+        url: 'user/register',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(request.body)
+      });
+    },
+    logout : function(){
+       return $.ajax({
+        url: 'user/logout',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(request.body)
+      });
+    }
+  };
+
+    
+  ajaxService = function(){
+    var ajaxResponse = $.ajax({
+      url: '/',
+      method: 'GET',
+      dataType: 'json',
+      data: '',
+      headers: {
+        auth_token: ''
+      },
+      ifModified: false
+    });
+
+    return promise;
+  };
   //Images repository
   images = (function(){
     var 
-      getImages, add, get, getAlbum, getAlbumByUser, fail,
-    items: [],
-    model = imageModel;
+      images: [],
+      model = imageModel,
+      getImages, add, get, getAlbum, getAlbumByUser, fail;
+
 
     get = function(){
       if(!items){
         datasource.makeRequest(options, {success: add, fail: fail});
-        this.trigger('images.new', items);
       }else{
         this.trigger('images.new', items);  
       };
     };
 
     add = function(data){
+      data.forEach(function(json_data){
+        images.push(makePhoto(json_data));
+      });
+
       if(Array.isArray(data){
         data.forEach(function(item){
           this.items.push(makePhoto(item));

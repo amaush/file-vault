@@ -29,7 +29,8 @@ legend {
     font-weight: bold;
 }
 
-.filevault-button, #filevault-upload-button{
+.filevault-button{ 
+    cursor: pointer;
     position: relative;
     padding: 10px 15px;
     background: #4479BA;
@@ -69,6 +70,35 @@ legend {
     margin-top: 20px;
 }
 
+/**** Login form ****/
+section.account-form{
+    border-radius: 2px;
+    padding: 24px;
+}
+
+header.account-header{
+    background-color: #cfcfcf;
+}
+
+header.account-header a:link{
+    text-decoration: none;
+}
+
+header.account-header span{
+    display:inline-block;
+    position: relative;
+    vertical-align: top;
+    width: 48%;
+    margin: 1%;
+    height: 60px;
+    background-color:#4479BA;
+    color: rgb(255,255,255);
+    padding: 6%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 15px;
+}
+
 .modalDialog {
     position: fixed;
     font-family: Arial, Helvetica, sans-serif;
@@ -80,7 +110,6 @@ legend {
     z-index: 99999;
     opacity:0;
     -webkit-transition: opacity 400ms ease-in;
-    -moz-transition: opacity 400ms ease-in;
     transition: opacity 400ms ease-in;
     pointer-events: none;
 }
@@ -114,15 +143,13 @@ legend {
     width: 100%;
     height: 100%;
     background-color: black;
-    opacity: .40;
-    -webkit-opacity: .4;
-    -moz-opacity: .4;
-    filter: alpha(opacity=40);
+    opacity: .60;
+    -moz-transition: opacity 400ms ease-in;
     z-index: 1000;
     cursor: pointer;
 }
 
-#modal-content {
+.login-modal-content, .upload-modal-content {
     background-color: white;
     border-radius: 15px;
     box-shadow: 0 0 20px 0 #222;
@@ -243,6 +270,7 @@ button
     font-weight: bold;
     border-radius: 5px;
     margin-top: 15px;
+    cursor: pointer;
 }
 
 

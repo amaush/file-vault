@@ -12,7 +12,7 @@ var
 
 app.disable('x-powered-by');
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+//app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 
 //app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,16 +30,18 @@ app.use(function(req, res, next){
   }
 });
 
-app.get('/', function(req, res){
-  console.log('Root node');
-  //res.sendFile(__dirname + '/public/filevault.html');
-});
-
 app.use('/api/image', image);
 app.use('/image/', image);
 //app.use('/gallery', gallery);
 app.use(bodyParser.json());
 app.use('/user', user);
+
+app.get('*', function(req, res){
+  console.log('Root node');
+  if(req.accepts('html')) res.sendFile(path.join(__dirname ,'public'));
+  //res.sendFile(__dirname + '/public/filevault.html');
+});
+
 
 //catch 404 and forward to error handler
 app.use(function(req, res, next){

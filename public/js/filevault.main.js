@@ -15,6 +15,7 @@ filevault.main = (function () {
             + '<div id="filevault-acct" class="filevault-button"><a href="">Sign In</a> / <a href="">Register</a></div>'
           + '</div>'
           + '<div id="filevault-content">'
+            + '<div id="modal-background"></div>'
             + '<div id="filevault-upload-modal" style = display: none;>'
             + '</div>'
             + '<div id="filevault-gallery-collection">'
@@ -32,7 +33,7 @@ filevault.main = (function () {
       is_gallery_visible : true
     },
     jqueryMap = { },      //cache jQuery collections in object
-    setJqueryMap, initModule, onToggleGallery, toggleModal, router, 
+    setJqueryMap, initModule, onToggleGallery, toggleModal, router, onClickModalBackground,
     onUploadClick, onLoginClick, onLogOutClick, onUploadComplete, onToggleModal, onToggleState, historyChange;
 
   setJqueryMap = function(){
@@ -42,6 +43,7 @@ filevault.main = (function () {
       $content : $container.find('#filevault-content'),
       $acct : $container.find('#filevault-acct'),
       $upload_modal: $container.find('#filevault-upload-modal'),
+      $modal_background: $container.find('#modal-background'),
       $global_upload_button: $container.find('#filevault-global-button'),
       $gallery_container: $container.find('#filevault-gallery'),
       $photo_container: $container.find('#filevault-gallery-photo'),
@@ -50,16 +52,22 @@ filevault.main = (function () {
     };
   };
 
+  onClickModalBackground = function(evt){
+    $(document).trigger('toggleModal');
+    evt.preventDefault();
+  };
+
+
   onLoginClick = function(evt){
     evt.preventDefault();
     toggleModal();
-    $(document).trigger('loginClick');
+    $(document).trigger('loginButtonClick');
   };
 
   onUploadClick = function(evt){
     evt.preventDefault();
     toggleModal();
-    $(document).trigger('uploadClick'); 
+    $(document).trigger('uploadButtonClick'); 
   };
 
   onToggleModal = function(evt){
@@ -69,6 +77,7 @@ filevault.main = (function () {
   
   toggleModal = function(){
     jqueryMap.$upload_modal.toggle();
+    jqueryMap.$modal_background.toggle();
   };
 
   onToggleState = function(evt){
@@ -160,10 +169,10 @@ filevault.main = (function () {
 
     //filevault.model.initModule($container);
     //filevault.data.initModule();
-    filevault.modal.initModule(jqueryMap.$upload_modal);
     filevault.model.gallery.initModule(jqueryMap.$gallery_container);
     filevault.model.photo.initModule(jqueryMap.$photo_container);       //TODO split model from view/controller
-    filevault.user.initModule(jqueryMap.$acct);
+    filevault.user.initModule(jqueryMap.$upload_modal);
+    filevault.modal.initModule(jqueryMap.$upload_modal);
 
     jqueryMap.$global_upload_button.on('click', onUploadClick);
     jqueryMap.$acct.on('click', onLoginClick);
@@ -171,6 +180,7 @@ filevault.main = (function () {
     //onToggleState();
     //hide modal form
     toggleModal();
+    jqueryMap.$modal_background.on('click', onClickModalBackground);
     $(document).on('uploadComplete', onUploadComplete);
     $(document).on('toggleModal', onToggleModal);
     $(document).on('toggleGallery', onToggleGallery);

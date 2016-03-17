@@ -68,35 +68,6 @@
     clear : both !important;
 }
 
-/**** Login form ****/
-section.account-form{
-    border-radius: 2px;
-    padding: 24px;
-}
-
-header#account-header{
-    background-color: #cfcfcf;
-}
-
-header#account-header a:link{
-    text-decoration: none;
-}
-
-header#account-header span{
-    display:inline-block;
-    position: relative;
-    vertical-align: top;
-    width: 48%;
-    margin: 1%;
-    height: 60px;
-    background-color:#4479BA;
-    color: rgb(255,255,255);
-    padding: 6%;
-    cursor: pointer;
-    text-align: center;
-    font-size: 15px;
-}
-
 
 form.minimal label{
     display: block;

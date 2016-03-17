@@ -45,6 +45,7 @@ next();
 */
 
 router.post('/login', function(req, res){
+  //console.log(req);
   Users.findOne({'email' : req.body.email})
     .select('user_name password').exec(function(err, user){
       if(err){ 
@@ -52,7 +53,7 @@ router.post('/login', function(req, res){
         res.status(500).json({success: false, message: 'Could not authenticate user'});
       }
       if(!user){
-        res.json({message : 'Authentication failed. User not found'});
+        res.status(404).json({message : 'Authentication failed. User not found'});
       }else if(user){
         //check if password matches
         var valid_pwd = user.comparePassword(req.body.password);
@@ -93,9 +94,9 @@ router.route('/register')
       if(err){
         console.log(err);
         if(err.code === 11000){
-          res.json({ message : 'account exists'});
+          res.status(401).json({ message : 'account exists'});
         }else{
-          res.json({ message : 'Error ' + err});
+          res.status(500).json({ message : 'Error ' + err});
         }
       }else{
         res.status(200).json({

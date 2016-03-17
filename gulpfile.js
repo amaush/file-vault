@@ -1,7 +1,14 @@
 var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
+    jshint = require('gulp-jshint'),
     concat = require('gulp-concat');
 
+
+gulp.task('jshint', function(){
+  return gulp.src('public/js/filevault.*')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+});
 
 gulp.task('scripts', function(){
     return gulp.src(['./public/js/filevault.js'
